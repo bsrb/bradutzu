@@ -1,0 +1,104 @@
+{% extends 'base.html' %} {% block script %}
+<script>
+  function register() {
+    state = document.getElementById("message");
+    state.classList.add("hidden");
+    state.innerHTML = "There was an error :(";
+    user = document.getElementById("username").value;
+    secret = document.getElementById("secret").value;
+    pass = document.getElementById("password").value;
+    repeat = document.getElementById("repeat").value;
+    if (pass !== repeat) {
+      state.innerHTML = "Password does not match";
+      state.classList.remove("hidden");
+      return;
+    }
+    payload = { username: user, secret: secret, password: pass };
+    fetch("/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return Promise.reject(response);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data.success) {
+          window.location.href = "/login";
+        } else {
+          state.innerHTML = data.message;
+          state.classList.remove("hidden");
+        }
+      })
+      .catch((response) => {
+        state.classList.remove("hidden");
+      });
+  }
+</script>
+{% endblock %} {% block button1 %} {% endblock %} {% block button2 %} {%
+endblock %} {% block content %}
+<div class="flex items-center justify-center h-4/5">
+  <div class="bg-white p-8 rounded w-96">
+    <h1 class="text-2xl font-bold mb-4">Register</h1>
+    <form>
+      <div class="mb-4">
+        <label for="username" class="block text-sm font-medium text-gray-600"
+          >Username</label
+        >
+        <input
+          type="text"
+          id="username"
+          name="username"
+          class="mt-1 p-2 w-full border rounded-md"
+        />
+      </div>
+      <div class="mb-4">
+        <label for="secret" class="block text-sm font-medium text-gray-600"
+          >Secret code</label
+        >
+        <input
+          type="text"
+          id="secret"
+          name="secret"
+          class="mt-1 p-2 w-full border rounded-md"
+        />
+      </div>
+      <div class="mb-4">
+        <label for="password" class="block text-sm font-medium text-gray-600"
+          >Password</label
+        >
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="mt-1 p-2 w-full border rounded-md"
+        />
+      </div>
+      <div class="mb-4">
+        <label for="repeat" class="block text-sm font-medium text-gray-600"
+          >Repeat password</label
+        >
+        <input
+          type="password"
+          id="repeat"
+          name="repeat"
+          class="mt-1 p-2 w-full border rounded-md"
+        />
+      </div>
+      <div id="message" class="hidden ml-3 text-red-600 text-md"></div>
+      <button
+        type="button"
+        onclick="register();"
+        class="bg-blue-500 text-white mt-4 p-2 rounded-md w-full"
+      >
+        Register
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Brădutzu</title>
+    <meta charset="UTF-8" />
+    <meta property="og:locale" content="ro_RO" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="/static/tailwind.css"></script>
+    <!-- Version 2.0.0 -->
+    {% block script %} {% endblock %}
+  </head>
+  <body onload="main();" class="bg-white">
+    <div class="relative min-h-screen px-5">
+      <div class="max-w-3xl mx-auto h-screen">
+        <nav class="pt-5">
+          <div class="flex items-center justify-between">
+            <a class="flex items-center" href="/">
+              <img class="object-contain w-16 h-16" src="/static/play.png" />
+              <span class="text-4xl text-black font-bold">Brădutzu</span>
+            </a>
+            <div class="flex">
+              {% block button1 %} {% endblock %}
+              {% block button2 %} {% endblock %}
+            </div>
+          </div>
+          <div class="min-w-full mt-4 h-[1px] bg-black"></div>
+        </nav>
+        {% block content %} {% endblock %}
+      </div>
+    </div>
+  </body>
+</html>
