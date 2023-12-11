@@ -1,6 +1,6 @@
 # bradutzu
 
-## Required modules
+## Required packages
 #### To run the server
 `pip3 install bcrypt flask flask_sqlalchemy pytz RestrictedPython sqlalchemy sqlalchemy_utils timeout-decorator`
 
@@ -19,7 +19,9 @@ REGISTER_SECRET="<choose a random strong password>"
 
 Uncomment the `DEBUG` line to run the server in debug mode. In this mode, it will use a `DummyNeoPixel` object instead of the original one. When instantiating the `DummyNeoPixel`, you can specify an additional debug flag that prints the commands that would be given to the NeoPixel. This is useful when we are testing or developing the server on hardware that does not support the NeoPixel package.
 
-Run the server from the `flask_app` directory using the `flask run` command.
+Then check and modify the `config.py` file, which contains settings about the NeoPixel, such as the length of the strip, animation runtime in seconds etc.
+
+Finally, run the server from the `flask_app` directory using the `flask run` command.
 
 ## Creating animation scripts
 We are using the [Adafruit NeoPixel package](https://docs.circuitpython.org/projects/neopixel/en/latest/) to control the lights. Check their documentation for examples on how to use it.
