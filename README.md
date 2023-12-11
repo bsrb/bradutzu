@@ -2,11 +2,15 @@
 
 ## Required packages
 #### To run the server
-`pip3 install bcrypt flask flask_sqlalchemy pytz RestrictedPython sqlalchemy sqlalchemy_utils timeout-decorator`
+```
+pip3 install bcrypt flask flask_sqlalchemy pytz RestrictedPython sqlalchemy sqlalchemy_utils timeout-decorator
+```
 
 You also need to install the NeoPixel package if you want to control actual lights: `pip3 install adafruit-circuitpython-neopixel`
 #### To run the code check
-`pip3 install RestrictedPython timeout-decorator`
+```
+pip3 install RestrictedPython timeout-decorator
+```
 
 ## Running the server
 First, modify the `.env` file:
@@ -67,6 +71,6 @@ def animation(pixels):
     pixels.show()
 ```
 
-This script will light the pixels red, one at a time, for 2ms. Get the number of pixels available through the `n` property.
+This script will light the pixels green, one at a time, for 2ms. Get the number of pixels available through the `n` property.
 
 After you've written your best animation, run the script through the `check_code.py` script to validate it. If there are no errors, log into the server and upload your new animation. You can also run it in test mode by ticking `test only` checkbox.
