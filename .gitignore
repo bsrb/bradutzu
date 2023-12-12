@@ -3,6 +3,7 @@
 flag.txt
 fullchain.pem
 privkey.pem
+raspberrypi.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

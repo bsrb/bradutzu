@@ -56,10 +56,8 @@ class Controller(threading.Thread):
                 self.log_write(f'Running test animation for {self.ANIMATION_TEST_USER}')
 
                 # Signal animation mprocess to terminate
-                self.log_write('terminate()')
                 animation_mprocess.terminate()
                 animation_mprocess.join()
-                self.log_write('joined()')
 
                 self.CTRL_IS_TESTING = True
 
