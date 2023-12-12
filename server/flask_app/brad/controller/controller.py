@@ -50,6 +50,7 @@ class Controller(threading.Thread):
 
     def run(self):
         animation_mprocess, animation_result = self.run_animation(self.pixels)
+        animation_killed = False
 
         while True:
             if self.ANIMATION_TEST_BYTECODE is not None:
@@ -58,6 +59,7 @@ class Controller(threading.Thread):
                 # Signal animation mprocess to terminate
                 animation_mprocess.terminate()
                 animation_mprocess.join()
+                animation_killed = True
 
                 self.CTRL_IS_TESTING = True
 
@@ -75,7 +77,12 @@ class Controller(threading.Thread):
                 self.log_write(f'Test animation for {self.ANIMATION_TEST_USER} finished running.')
 
             if not animation_mprocess.is_alive():
-                result = animation_result.get()
+                if animation_killed:
+                    animation_killed = False
+                    result = 'Success'
+                else:
+                    # If the multiprocess was killed this will hang
+                    result = animation_result.get()
                 if result == 'KeyboardInterrupt':
                     # If mprocess died by KeyboardInterrupt then we must also exit
                     break
