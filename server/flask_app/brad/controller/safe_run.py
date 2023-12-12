@@ -3,12 +3,29 @@ from config import Config
 import multiprocessing
 import timeout_decorator
 
+class WrappedNeoPixel:
+    _guarded_writes = True
+    def __init__(self, neopixel, stop_event):
+        self.neopixel = neopixel
+        self.stop_event = stop_event
+    def show(self):
+        if not self.stop_event.is_set(): self.neopixel.show()
+    def fill(self, color):
+        if not self.stop_event.is_set(): self.neopixel.fill(color)
+    def __setitem__(self, key, value):
+        if not self.stop_event.is_set(): self.neopixel[key] = value
+    def __getattr__(self, name):
+        if name in ['neopixel', 'deinit']:
+            raise AttributeError('Calling neopixel directly is not allowed')
+        else:
+            return getattr(self.neopixel, name)
+
 class AnimationProcess(multiprocessing.Process):
-    def __init__(self, pixels, filepath, result_queue):
-        super().__init__()
-        self.pixels = pixels
+    def __init__(self, pixels, filepath, result_queue, stop_event):
+        self.pixels = WrappedNeoPixel(pixels, stop_event)
         self.filepath = filepath
         self.result_queue = result_queue
+        super().__init__()
 
     def run(self):
         try:
@@ -18,7 +35,7 @@ class AnimationProcess(multiprocessing.Process):
         except KeyboardInterrupt:
             self.result_queue.put('KeyboardInterrupt')
         except Exception as e:
-            self.result_queue.put(str(e))
+            self.result_queue.put(f'{type(e).__name__}: {e}')
         else:
             self.result_queue.put('Success')
 

@@ -1,6 +1,6 @@
 from datetime import datetime
 import os
-import multiprocessing
+from multiprocessing import Event, Queue
 import pytz
 import random
 import timeout_decorator
@@ -49,7 +49,7 @@ class Controller(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        animation_mprocess, animation_result = self.run_animation(self.pixels)
+        animation_mprocess, animation_result, animation_event = self.run_animation(self.pixels)
         animation_killed = False
 
         while True:
@@ -57,7 +57,8 @@ class Controller(threading.Thread):
                 self.log_write(f'Running test animation for {self.ANIMATION_TEST_USER}')
 
                 # Signal animation mprocess to terminate
-                animation_mprocess.terminate()
+                animation_event.set()
+                animation_mprocess.kill()
                 animation_mprocess.join()
                 animation_killed = True
 
@@ -88,7 +89,7 @@ class Controller(threading.Thread):
                     break
                 if result != 'Success' and result != 'TimeoutError':
                     self.log_write(f'[AnimationProcess] {result}')
-                animation_mprocess, animation_result = self.run_animation(self.pixels)
+                animation_mprocess, animation_result, animation_event = self.run_animation(self.pixels)
 
             animation_mprocess.join(timeout=0.5)
 
@@ -99,11 +100,15 @@ class Controller(threading.Thread):
         filename, filepath = self.random_animation()
         self.ANIMATION_FILENAME = filename
         self.log_write(f'Now playing {self.ANIMATION_FILENAME}')
-        # Start new animation
-        result_queue = multiprocessing.Queue()
-        animation_mprocess = safe_run.AnimationProcess(pixels, filepath, result_queue)
+
+        # Quere used to pass the error messages (if any) from the multiprocess back to controller
+        result_queue = Queue()
+        # Event used to signal the multiprocess to stop using the NeoPixel object
+        stop_event = Event()
+        animation_mprocess = safe_run.AnimationProcess(pixels, filepath, result_queue, stop_event)
         animation_mprocess.start()
-        return animation_mprocess, result_queue
+
+        return animation_mprocess, result_queue, stop_event
 
     def random_animation(self):
         animations_dir = os.path.join(os.getcwd(), self.config.FLASK_APP, 'animations')
